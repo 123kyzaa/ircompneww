@@ -1,398 +1,302 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import styles from "./RakitPc.module.css";
 
-const ADMIN_WA = "6285298747600"; // nomor admin (tanpa +)
+const ADMIN_WA = "6285298747600";
 
-type Kegunaan =
-  | "Gaming"
-  | "Editing"
-  | "Streaming"
-  | "Office"
-  | "Sekolah/Kuliah"
-  | "Rendering/3D"
-  | "Lainnya";
+type Province = { id: string; name: string };
+type Regency = { id: string; province_id: string; name: string };
 
 function normalizeWA(input: string) {
-  // buat tampilan rapi + umum dipakai: 08xxx / +62xxx / 62xxx
-  let v = input.trim().replace(/\s+/g, "");
-  if (!v) return "";
-  if (v.startsWith("+")) v = v.slice(1);
-  if (v.startsWith("08")) v = "62" + v.slice(1);
-  return v.replace(/[^0-9]/g, "");
+  const d = input.replace(/\D/g, "");
+  if (!d) return "";
+  if (d.startsWith("0")) return "62" + d.slice(1);
+  if (d.startsWith("62")) return d;
+  if (d.startsWith("8")) return "62" + d;
+  return d;
+}
+
+function formatRupiahFromDigits(digits: string) {
+  if (!digits) return "";
+  const n = Number(digits);
+  if (!Number.isFinite(n)) return "";
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(n);
 }
 
 export default function RakitPcPage() {
   const [nama, setNama] = useState("");
   const [wa, setWa] = useState("");
-  const [domisili, setDomisili] = useState("");
-  const [kegunaan, setKegunaan] = useState<Kegunaan>("Gaming");
-  const [budget, setBudget] = useState("");
+
+  // Domisili: Provinsi -> Kabupaten/Kota (WAJIB pilih)
+  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [regencies, setRegencies] = useState<Regency[]>([]);
+  const [provinceId, setProvinceId] = useState("");
+  const [regencyId, setRegencyId] = useState("");
+
+  const [kegunaan, setKegunaan] = useState("Gaming");
+
+  // Budget hanya angka
+  const [budgetDigits, setBudgetDigits] = useState(""); // contoh: "12000000"
+  const budgetRupiah = useMemo(
+    () => formatRupiahFromDigits(budgetDigits),
+    [budgetDigits]
+  );
+
   const [catatan, setCatatan] = useState("");
 
-  const waNormalized = useMemo(() => normalizeWA(wa), [wa]);
+  const waFix = useMemo(() => normalizeWA(wa), [wa]);
+
+  // load provinces
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json",
+          { cache: "force-cache" }
+        );
+        const data = (await res.json()) as Province[];
+        if (!cancelled) setProvinces(Array.isArray(data) ? data : []);
+      } catch {
+        if (!cancelled) setProvinces([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // load regencies when province changes
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!provinceId) {
+        setRegencies([]);
+        return;
+      }
+      try {
+        const res = await fetch(
+          `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinceId}.json`,
+          { cache: "no-store" }
+        );
+        const data = (await res.json()) as Regency[];
+        if (!cancelled) setRegencies(Array.isArray(data) ? data : []);
+      } catch {
+        if (!cancelled) setRegencies([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [provinceId]);
+
+  const provinceName = useMemo(
+    () => provinces.find((p) => p.id === provinceId)?.name || "",
+    [provinceId, provinces]
+  );
+  const regencyName = useMemo(
+    () => regencies.find((r) => r.id === regencyId)?.name || "",
+    [regencyId, regencies]
+  );
+
+  const domisiliText = useMemo(() => {
+    if (!provinceName || !regencyName) return "-";
+    return `${regencyName}, ${provinceName}`;
+  }, [provinceName, regencyName]);
 
   const pesan = useMemo(() => {
-    // format sesuai permintaan kamu
+    const safe = (v: string) => (v?.trim() ? v.trim() : "-");
     return (
-      `FORM RAKIT PC\n` +
-      `Nama: ${nama || "-"}\n` +
-      `WA: ${waNormalized || "-"}\n` +
-      `Domisili: ${domisili || "-"}\n` +
-      `Kegunaan: ${kegunaan || "-"}\n` +
-      `Budget: ${budget || "-"}\n` +
-      `Catatan: ${catatan || "-"}`
+      "FORM RAKIT PC\n" +
+      `Nama: ${safe(nama)}\n` +
+      `WA: ${safe(waFix)}\n` +
+      `Domisili: ${safe(domisiliText)}\n` +
+      `Kegunaan: ${safe(kegunaan)}\n` +
+      `Budget: ${safe(budgetRupiah)}\n` +
+      `Catatan: ${safe(catatan)}`
     );
-  }, [nama, waNormalized, domisili, kegunaan, budget, catatan]);
+  }, [nama, waFix, domisiliText, kegunaan, budgetRupiah, catatan]);
 
-  function kirimWhatsApp() {
-    const text = encodeURIComponent(pesan);
-    window.location.href = `https://wa.me/${ADMIN_WA}?text=${text}`;
+  function kirimWA() {
+    if (!nama.trim() || !waFix || !provinceId || !regencyId || !budgetDigits) {
+      alert(
+        "Lengkapi: Nama, WhatsApp, Provinsi, Kabupaten/Kota, dan Budget (angka)."
+      );
+      return;
+    }
+    window.open(
+      `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesan)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   }
 
   async function salinPesan() {
     try {
       await navigator.clipboard.writeText(pesan);
-      alert("Pesan berhasil disalin!");
+      alert("Pesan berhasil disalin");
     } catch {
-      // fallback
-      const ta = document.createElement("textarea");
-      ta.value = pesan;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      alert("Pesan berhasil disalin!");
+      alert("Gagal menyalin pesan (izin clipboard ditolak).");
     }
   }
 
-  const theme = {
-    gold: "#d6b45c",
-    red: "#ff3b3b",
-    silver: "#c9c9c9",
-    bg: "#0b0f14",
-    panel: "rgba(16, 22, 30, 0.72)",
-    border: "rgba(255,255,255,0.10)",
-    input: "rgba(0,0,0,0.35)",
-    text: "#eaf2ff",
-    muted: "rgba(234,242,255,0.70)",
-  } as const;
-
-  // biar TS tidak ribet untuk CSS variables
-  const cssVars = {
-    "--c-gold": theme.gold,
-    "--c-red": theme.red,
-    "--c-silver": theme.silver,
-  } as React.CSSProperties;
-
   return (
-    <div style={{ ...cssVars }} className="page">
-      {/* background glow */}
-      <div className="bgGlow" />
+    <main className={styles.page}>
+      <div className={styles.bgGlow} />
 
-      <main className="wrap">
-        {/* logo (tanpa bulatan) */}
-        <div className="logoRow">
-          <Image
-            src="/ir-logo.png"
-            alt="IR Computer"
-            width={140}
-            height={140}
-            priority
-            className="logo"
-          />
-        </div>
+      <section className={styles.wrap}>
+        <header className={styles.header}>
+          <div className={styles.logoWrap}>
+            {/* Taruh logonya di: /public/ir-logo.png */}
+            <Image
+              src="/ir-logo.png"
+              alt="IR Computer"
+              width={120}
+              height={120}
+              priority
+              className={styles.logoImg}
+            />
+          </div>
 
-        <h1 className="title">
-          <span className="titleLeft">Form Rakit</span>{" "}
-          <span className="titleRight">PC</span>
-        </h1>
-        <p className="subtitle">IR Computer — Konsultasi Cepat via WhatsApp</p>
+          <h1 className={styles.title}>
+            <span className={styles.t1}>Form</span>{" "}
+            <span className={styles.t2}>Rakit</span>{" "}
+            <span className={styles.t3}>PC</span>
+          </h1>
+          <p className={styles.sub}>IR Computer — Konsultasi Cepat via WhatsApp</p>
+        </header>
 
-        <section className="card">
-          <div className="field">
-            <label>Nama Kamu:</label>
+        <div className={styles.card}>
+          {/* watermark transparan */}
+          <div className={styles.watermark}>
+            made by students from Telkom Makassar Vocational School
+          </div>
+
+          <div className={styles.field}>
+            <label className={styles.label}>Nama</label>
             <input
+              className={styles.input}
               value={nama}
               onChange={(e) => setNama(e.target.value)}
-              placeholder="Masukkan nama"
+              placeholder="Nama lengkap"
               autoComplete="name"
             />
           </div>
 
-          <div className="field">
-            <label>Nomor WhatsApp Kamu:</label>
+          <div className={styles.field}>
+            <label className={styles.label}>WhatsApp</label>
             <input
+              className={styles.input}
               value={wa}
               onChange={(e) => setWa(e.target.value)}
-              placeholder="contoh: 08xxxxxxxxxx"
+              placeholder="08xxxxxxxxxx"
               inputMode="tel"
               autoComplete="tel"
             />
-            <div className="hint">
-              Format otomatis: <b>{waNormalized || "-"}</b>
-            </div>
+            <div className={styles.help}>Format otomatis: {waFix || "-"}</div>
           </div>
 
-          <div className="field">
-            <label>Domisili/alamat:</label>
-            <input
-              value={domisili}
-              onChange={(e) => setDomisili(e.target.value)}
-              placeholder="contoh: Makassar / Gowa"
-            />
-          </div>
-
-          <div className="field">
-            <label>Kegunaan:</label>
+          <div className={styles.field}>
+            <label className={styles.label}>Domisili (Provinsi)</label>
             <select
-              value={kegunaan}
-              onChange={(e) => setKegunaan(e.target.value as Kegunaan)}
+              className={styles.select}
+              value={provinceId}
+              onChange={(e) => {
+                const next = e.target.value;
+                setProvinceId(next);
+                setRegencyId(""); // reset di handler (hindari warning effect)
+              }}
             >
-              <option>Gaming</option>
-              <option>Editing</option>
-              <option>Streaming</option>
-              <option>Office</option>
-              <option>Sekolah/Kuliah</option>
-              <option>Rendering/3D</option>
-              <option>Lainnya</option>
+              <option value="">Pilih Provinsi</option>
+              {provinces.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          <div className="field">
-            <label>Budget:</label>
-            <input
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              placeholder="contoh: 5 juta / 8 juta / 12 juta"
-            />
+          <div className={styles.field}>
+            <label className={styles.label}>Domisili (Kabupaten / Kota)</label>
+            <select
+              className={styles.select}
+              value={regencyId}
+              onChange={(e) => setRegencyId(e.target.value)}
+              disabled={!provinceId}
+            >
+              <option value="">
+                {provinceId ? "Pilih Kabupaten/Kota" : "Pilih provinsi dulu"}
+              </option>
+              {regencies.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="field">
-            <label>Catatan:</label>
+          <div className={styles.field}>
+            <label className={styles.label}>Kegunaan</label>
+            <select
+              className={styles.select}
+              value={kegunaan}
+              onChange={(e) => setKegunaan(e.target.value)}
+            >
+              <option value="Gaming">Gaming</option>
+              <option value="Editing">Editing</option>
+              <option value="Streaming">Streaming</option>
+              <option value="Office">Office</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+
+          <div className={styles.field}>
+            <label className={styles.label}>Budget (angka)</label>
+            <input
+              className={styles.input}
+              value={budgetRupiah}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, "");
+                setBudgetDigits(digits);
+              }}
+              placeholder="contoh: 12000000"
+              inputMode="numeric"
+            />
+            <div className={styles.help}>
+              {budgetDigits ? `Tersimpan: ${budgetDigits} (digits)` : "Wajib diisi"}
+            </div>
+          </div>
+
+          <div className={styles.field}>
+            <label className={styles.label}>Catatan</label>
             <textarea
+              className={styles.textarea}
               value={catatan}
               onChange={(e) => setCatatan(e.target.value)}
-              placeholder="contoh: mau full set + monitor, fokus fps, dll"
               rows={4}
+              placeholder="Contoh: mau casing putih, wifi wajib, request monitor, dll."
             />
           </div>
 
-          <div className="actions">
-            <button className="btnPrimary" onClick={kirimWhatsApp}>
+          <div className={styles.btnRow}>
+            <button type="button" className={styles.btnWA} onClick={kirimWA}>
               Kirim WhatsApp
             </button>
-            <button className="btnGhost" onClick={salinPesan}>
+            <button type="button" className={styles.btnCopy} onClick={salinPesan}>
               Salin Pesan
             </button>
           </div>
 
-          <div className="preview">
-            <div className="previewTitle">Preview Pesan</div>
-            <pre className="previewBox">{pesan}</pre>
-          </div>
-        </section>
-      </main>
-
-      <style jsx>{`
-        .page {
-          min-height: 100vh;
-          background: ${theme.bg};
-          color: ${theme.text};
-          position: relative;
-          overflow: hidden;
-          padding: 48px 16px;
-          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-            Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-        }
-
-        .bgGlow {
-          position: absolute;
-          inset: -40%;
-          background: radial-gradient(
-              700px 400px at 20% 20%,
-              rgba(0, 255, 180, 0.16),
-              transparent 60%
-            ),
-            radial-gradient(
-              800px 500px at 80% 30%,
-              rgba(255, 59, 59, 0.12),
-              transparent 60%
-            ),
-            radial-gradient(
-              700px 500px at 60% 90%,
-              rgba(214, 180, 92, 0.12),
-              transparent 60%
-            );
-          filter: blur(18px);
-          pointer-events: none;
-        }
-
-        .wrap {
-          position: relative;
-          max-width: 860px;
-          margin: 0 auto;
-          text-align: center;
-        }
-
-        .logoRow {
-          display: flex;
-          justify-content: center;
-          margin-bottom: 14px;
-        }
-
-        .logo {
-          height: auto;
-          width: 120px;
-          object-fit: contain;
-          filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.55));
-        }
-
-        .title {
-          margin: 6px 0 8px;
-          font-size: clamp(34px, 4.4vw, 56px);
-          line-height: 1.05;
-          letter-spacing: -0.02em;
-          font-weight: 900;
-        }
-        .titleLeft {
-          background: linear-gradient(90deg, #ffffff, var(--c-silver));
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-        }
-        .titleRight {
-          background: linear-gradient(90deg, var(--c-gold), var(--c-red));
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-        }
-
-        .subtitle {
-          margin: 0 0 22px;
-          color: ${theme.muted};
-          font-size: 16px;
-        }
-
-        .card {
-          margin: 0 auto;
-          max-width: 680px;
-          text-align: left;
-          background: ${theme.panel};
-          border: 1px solid ${theme.border};
-          border-radius: 18px;
-          padding: 20px;
-          box-shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
-          backdrop-filter: blur(10px);
-        }
-
-        .field {
-          margin-bottom: 14px;
-        }
-        label {
-          display: block;
-          font-weight: 800;
-          margin-bottom: 8px;
-          font-size: 18px;
-        }
-
-        input,
-        select,
-        textarea {
-          width: 100%;
-          background: ${theme.input};
-          border: 1px solid ${theme.border};
-          color: ${theme.text};
-          border-radius: 14px;
-          padding: 14px 14px;
-          outline: none;
-          font-size: 16px;
-          transition: border 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-          border-color: rgba(214, 180, 92, 0.55);
-          box-shadow: 0 0 0 4px rgba(214, 180, 92, 0.12);
-        }
-
-        .hint {
-          margin-top: 8px;
-          font-size: 13px;
-          color: ${theme.muted};
-        }
-
-        .actions {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          margin-top: 10px;
-        }
-
-        .btnPrimary,
-        .btnGhost {
-          border-radius: 14px;
-          padding: 14px 14px;
-          font-weight: 900;
-          font-size: 15px;
-          cursor: pointer;
-          border: 1px solid ${theme.border};
-          transition: transform 0.08s ease, filter 0.15s ease,
-            border-color 0.15s ease;
-        }
-
-        .btnPrimary {
-          background: linear-gradient(90deg, var(--c-gold), var(--c-red));
-          color: #0b0f14;
-          border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        .btnGhost {
-          background: rgba(255, 255, 255, 0.04);
-          color: ${theme.text};
-        }
-
-        .btnPrimary:active,
-        .btnGhost:active {
-          transform: translateY(1px);
-        }
-
-        .preview {
-          margin-top: 16px;
-        }
-        .previewTitle {
-          font-weight: 900;
-          margin-bottom: 8px;
-          color: ${theme.muted};
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          font-size: 12px;
-        }
-        .previewBox {
-          background: rgba(0, 0, 0, 0.35);
-          border: 1px solid ${theme.border};
-          border-radius: 14px;
-          padding: 14px;
-          white-space: pre-wrap;
-          word-break: break-word;
-          font-size: 14px;
-          line-height: 1.45;
-        }
-
-        @media (max-width: 520px) {
-          .actions {
-            grid-template-columns: 1fr;
-          }
-          .logo {
-            width: 105px;
-          }
-          label {
-            font-size: 17px;
-          }
-        }
-      `}</style>
-    </div>
+          <div className={styles.previewTitle}>Preview Pesan</div>
+          <pre className={styles.preview}>{pesan}</pre>
+        </div>
+      </section>
+    </main>
   );
 }

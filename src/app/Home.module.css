@@ -1,0 +1,162 @@
+.page {
+  min-height: 100vh;
+  background: #07090c;
+  color: #eef2f8;
+  padding: 38px 16px 60px;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  position: relative;
+  overflow: hidden;
+}
+
+.bgGlow {
+  position: absolute;
+  inset: -140px;
+  background: radial-gradient(900px 420px at 18% 18%, rgba(0, 255, 180, 0.14), transparent 60%),
+    radial-gradient(900px 420px at 82% 28%, rgba(255, 60, 60, 0.14), transparent 60%),
+    radial-gradient(900px 420px at 50% 92%, rgba(214, 180, 92, 0.14), transparent 60%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  margin-top: 18px;
+  margin-bottom: 14px;
+}
+
+.title {
+  font-size: 44px;
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.sub {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.sliderWrap {
+  margin-top: 18px;
+}
+
+/* top right area */
+.topRight {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.iconBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 14, 20, 0.55);
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.iconBtn:hover {
+  border-color: rgba(214, 180, 92, 0.5);
+  transform: translateY(-1px);
+  transition: 160ms ease;
+}
+
+.menuBtn {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #d6b45c, #ff3b3b);
+  color: #101114;
+  font-weight: 900;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+.arrow {
+  font-weight: 900;
+}
+
+/* location card */
+.locationCard {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(12, 18, 26, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+.locLeft {
+  min-width: 0;
+}
+
+.locTitle {
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.locDesc {
+  margin-top: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.locBtn {
+  flex: 0 0 auto;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.locBtn:hover {
+  border-color: rgba(0, 255, 180, 0.45);
+  transform: translateY(-1px);
+  transition: 160ms ease;
+}
+
+@media (max-width: 520px) {
+  .title {
+    font-size: 36px;
+  }
+  .topRight {
+    top: 12px;
+    right: 12px;
+    gap: 8px;
+  }
+  .menuBtn {
+    padding: 0 12px;
+  }
+  .locationCard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
