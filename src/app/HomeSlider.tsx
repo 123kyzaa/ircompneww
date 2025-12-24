@@ -12,7 +12,6 @@ type Slide = {
 
 export default function HomeSlider({ slides }: { slides: Slide[] }) {
   const [i, setI] = useState(0);
-
   const safeSlides = useMemo(() => (slides?.length ? slides : []), [slides]);
 
   function next() {
@@ -25,10 +24,9 @@ export default function HomeSlider({ slides }: { slides: Slide[] }) {
 
   useEffect(() => {
     if (safeSlides.length <= 1) return;
-    const t = setInterval(
-      () => setI((v) => (v + 1) % safeSlides.length),
-      4500
-    );
+    const t = setInterval(() => {
+      setI((v) => (v + 1) % safeSlides.length);
+    }, 4500);
     return () => clearInterval(t);
   }, [safeSlides.length]);
 
@@ -46,6 +44,7 @@ export default function HomeSlider({ slides }: { slides: Slide[] }) {
         sizes="(max-width: 980px) 100vw, 980px"
         className={styles.img}
       />
+      <div className={styles.overlay} aria-hidden="true" />
     </div>
   );
 
@@ -78,9 +77,7 @@ export default function HomeSlider({ slides }: { slides: Slide[] }) {
             {safeSlides.map((_, idx) => (
               <button
                 key={idx}
-                className={`${styles.dot} ${
-                  idx === i ? styles.dotActive : ""
-                }`}
+                className={`${styles.dot} ${idx === i ? styles.dotActive : ""}`}
                 onClick={() => setI(idx)}
                 aria-label={`Slide ${idx + 1}`}
               />

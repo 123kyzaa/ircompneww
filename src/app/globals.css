@@ -1,27 +1,52 @@
-:root{
-  --bg:#07090c;
-  --panel:#0c121a;
-  --panel2:#0a0f15;
+:root {
+  --bg: #07090c;
+  --panel: rgba(12, 18, 26, 0.72);
+  --panel2: rgba(10, 15, 21, 0.72);
 
-  --text:#eef2f8;
-  --muted:rgba(238,242,248,.7);
-  --line:rgba(255,255,255,.12);
+  --text: #eef2f8;
+  --muted: rgba(238, 242, 248, 0.72);
+  --muted2: rgba(238, 242, 248, 0.58);
 
-  --gold:#d6b15c;
-  --red:#e23b3b;
-  --green:#2cffb4;
+  --line: rgba(255, 255, 255, 0.12);
+  --line2: rgba(255, 255, 255, 0.08);
+
+  --gold: #d6b15c;
+  --red: #e23b3b;
+  --green: #2cffb4;
+
+  --shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
+  --radius: 22px;
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
+* {
+  box-sizing: border-box;
+}
 
-body{
-  margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  color:var(--text);
+html,
+body {
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text);
   background:
-    radial-gradient(900px 400px at 50% -10%, rgba(214,177,92,.18), transparent 55%),
-    radial-gradient(800px 400px at 80% 20%, rgba(226,59,59,.15), transparent 60%),
-    radial-gradient(700px 400px at 20% 30%, rgba(44,255,180,.10), transparent 60%),
-    linear-gradient(180deg,#05070a,var(--bg));
+    radial-gradient(900px 420px at 50% -10%, rgba(214, 177, 92, 0.18), transparent 55%),
+    radial-gradient(800px 400px at 80% 20%, rgba(226, 59, 59, 0.14), transparent 60%),
+    radial-gradient(700px 400px at 20% 30%, rgba(44, 255, 180, 0.11), transparent 60%),
+    linear-gradient(180deg, #05070a, var(--bg));
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(214, 177, 92, 0.35);
 }

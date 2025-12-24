@@ -1,10 +1,6 @@
 .page {
   min-height: 100vh;
-  background: #07090c;
-  color: #eef2f8;
-  padding: 38px 16px 60px;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-    Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  padding: 28px 16px 64px;
   position: relative;
   overflow: hidden;
 }
@@ -12,7 +8,8 @@
 .bgGlow {
   position: absolute;
   inset: -140px;
-  background: radial-gradient(900px 420px at 18% 18%, rgba(0, 255, 180, 0.14), transparent 60%),
+  background:
+    radial-gradient(900px 420px at 18% 18%, rgba(0, 255, 180, 0.14), transparent 60%),
     radial-gradient(900px 420px at 82% 28%, rgba(255, 60, 60, 0.14), transparent 60%),
     radial-gradient(900px 420px at 50% 92%, rgba(214, 180, 92, 0.14), transparent 60%);
   filter: blur(18px);
@@ -26,34 +23,51 @@
   z-index: 1;
 }
 
-.header {
-  margin-top: 18px;
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
   margin-bottom: 14px;
 }
 
-.title {
-  font-size: 44px;
-  line-height: 1.05;
-  font-weight: 900;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brandLogo {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(10, 14, 20, 0.35);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.35);
+}
+
+.brandText {
+  min-width: 0;
+}
+
+.brandName {
+  font-weight: 950;
   letter-spacing: -0.02em;
   margin: 0;
+  line-height: 1.1;
 }
 
-.sub {
-  margin: 10px 0 0;
-  color: rgba(255, 255, 255, 0.72);
+.brandTag {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.sliderWrap {
-  margin-top: 18px;
-}
-
-/* top right area */
-.topRight {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 2;
+.actions {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -79,84 +93,188 @@
   transition: 160ms ease;
 }
 
-.menuBtn {
+.primaryBtn {
   height: 44px;
   padding: 0 16px;
   border-radius: 16px;
-  background: linear-gradient(90deg, #d6b45c, #ff3b3b);
+  background: linear-gradient(90deg, var(--gold), var(--red));
   color: #101114;
-  font-weight: 900;
+  font-weight: 950;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 10px;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  border: none;
+  cursor: pointer;
 }
 
-.arrow {
-  font-weight: 900;
+.hero {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-/* location card */
-.locationCard {
-  margin-top: 18px;
+.title {
+  font-size: 42px;
+  line-height: 1.06;
+  font-weight: 980;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.titleGrad {
+  background: linear-gradient(90deg, var(--gold), #cfcfcf);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sub {
+  margin: 12px 0 0;
+  color: var(--muted);
+  max-width: 66ch;
+}
+
+.badges {
+  margin-top: 14px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 16px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  background: rgba(12, 18, 26, 0.55);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badge {
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(12, 18, 26, 0.52);
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 800;
+  font-size: 13px;
   backdrop-filter: blur(10px);
 }
 
-.locLeft {
-  min-width: 0;
+.sliderWrap {
+  margin-top: 18px;
 }
 
-.locTitle {
-  font-weight: 900;
-  font-size: 16px;
+.grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px;
 }
 
-.locDesc {
-  margin-top: 6px;
+.card {
+  grid-column: span 6;
+  border-radius: var(--radius);
+  border: 1px solid var(--line2);
+  background: rgba(12, 18, 26, 0.52);
+  backdrop-filter: blur(10px);
+  padding: 16px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25);
+}
+
+.cardTitle {
+  margin: 0;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+.cardDesc {
+  margin: 8px 0 0;
+  color: var(--muted);
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
 }
 
-.locBtn {
-  flex: 0 0 auto;
-  padding: 12px 14px;
+.cardRow {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.miniBtn {
+  padding: 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.28);
+  color: rgba(255, 255, 255, 0.92);
   text-decoration: none;
-  font-weight: 800;
+  font-weight: 850;
+  font-size: 13px;
 }
 
-.locBtn:hover {
-  border-color: rgba(0, 255, 180, 0.45);
+.miniBtn:hover {
+  border-color: rgba(44, 255, 180, 0.42);
   transform: translateY(-1px);
   transition: 160ms ease;
 }
 
+.section {
+  margin-top: 18px;
+}
+
+.sectionTitle {
+  margin: 0 0 10px;
+  font-weight: 980;
+  letter-spacing: -0.02em;
+}
+
+.faq {
+  display: grid;
+  gap: 10px;
+}
+
+.faqItem {
+  border: 1px solid var(--line2);
+  background: rgba(12, 18, 26, 0.52);
+  border-radius: 18px;
+  padding: 12px 14px;
+}
+
+.faqQ {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.faqA {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.footer {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line2);
+  color: var(--muted2);
+  font-size: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+@media (max-width: 840px) {
+  .card {
+    grid-column: span 12;
+  }
+}
+
 @media (max-width: 520px) {
   .title {
-    font-size: 36px;
+    font-size: 34px;
   }
-  .topRight {
-    top: 12px;
-    right: 12px;
-    gap: 8px;
+  .brandName {
+    font-size: 16px;
   }
-  .menuBtn {
+  .primaryBtn {
     padding: 0 12px;
-  }
-  .locationCard {
-    flex-direction: column;
-    align-items: stretch;
   }
 }

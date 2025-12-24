@@ -1,10 +1,10 @@
 .slider {
   position: relative;
-  border-radius: 22px;
+  border-radius: var(--radius);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--line);
   background: rgba(10, 14, 20, 0.35);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow);
 }
 
 .link {
@@ -23,6 +23,16 @@
 .img {
   object-fit: cover;
   transform: scale(1.01);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(900px 400px at 20% 20%, rgba(44, 255, 180, 0.10), transparent 55%),
+    radial-gradient(900px 400px at 80% 30%, rgba(226, 59, 59, 0.10), transparent 60%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.30));
+  pointer-events: none;
 }
 
 .navLeft,
@@ -82,7 +92,7 @@
 }
 
 .dotActive {
-  background: #d6b45c;
+  background: var(--gold);
 }
 
 @media (max-width: 520px) {
