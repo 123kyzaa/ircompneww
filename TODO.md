@@ -1,0 +1,4 @@
+- Rename public/Slider to public/slider (lowercase)
+- Rename Slide-1.jpg to slide1.jpg
+- Copy slide1.jpg to slide2.jpg
+- Copy slide1.jpg to slide3.jpg
