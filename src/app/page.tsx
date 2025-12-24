@@ -101,8 +101,6 @@ export default function Page() {
   const slides = useMemo(
     () => [
       { src: "/slider/slide1.jpg", alt: "IR Computer - Rakit PC" },
-      { src: "/slider/slide2.jpg", alt: "IR Computer - Upgrade & Service" },
-      { src: "/slider/slide3.jpg", alt: "IR Computer - Promo" },
     ],
     []
   );

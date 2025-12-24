@@ -14,6 +14,7 @@
 
 .title {
   margin: 0;
+  font-family: 'Poppins', sans-serif;
   font-weight: 980;
   letter-spacing: -0.02em;
 }
@@ -59,6 +60,7 @@
 
 .label {
   display: block;
+  font-family: 'Poppins', sans-serif;
   font-weight: 900;
   margin-bottom: 6px;
   font-size: 13px;
@@ -110,6 +112,7 @@
   background: rgba(255, 255, 255, 0.05);
   color: rgba(255, 255, 255, 0.86);
   font-size: 12px;
+  font-family: 'Poppins', sans-serif;
   font-weight: 850;
   cursor: pointer;
 }
@@ -132,7 +135,8 @@
   border: none;
   border-radius: 18px;
   padding: 14px;
-  font-weight: 980;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 970;
   cursor: pointer;
   color: #0b0d10;
   transition: transform 140ms ease, opacity 140ms ease;
@@ -149,6 +153,7 @@
   border-radius: 18px;
   padding: 14px;
   color: #ffffff;
+  font-family: 'Poppins', sans-serif;
   font-weight: 980;
   cursor: pointer;
   transition: transform 140ms ease, opacity 140ms ease;
@@ -161,6 +166,7 @@
 
 .previewTitle {
   margin-top: 16px;
+  font-family: 'Poppins', sans-serif;
   font-weight: 980;
   color: rgba(255, 255, 255, 0.86);
 }

@@ -52,6 +52,7 @@
 }
 
 .brandName {
+  font-family: 'Poppins', sans-serif;
   font-weight: 950;
   letter-spacing: -0.02em;
   margin: 0;
@@ -99,6 +100,7 @@
   border-radius: 16px;
   background: linear-gradient(90deg, var(--gold), var(--red));
   color: #101114;
+  font-family: 'Poppins', sans-serif;
   font-weight: 950;
   text-decoration: none;
   display: inline-flex;
@@ -117,7 +119,8 @@
 .title {
   font-size: 42px;
   line-height: 1.06;
-  font-weight: 980;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
   letter-spacing: -0.03em;
   margin: 0;
 }
@@ -148,6 +151,7 @@
   border: 1px solid var(--line);
   background: rgba(12, 18, 26, 0.52);
   color: rgba(255, 255, 255, 0.86);
+  font-family: 'Poppins', sans-serif;
   font-weight: 800;
   font-size: 13px;
   backdrop-filter: blur(10px);
@@ -176,6 +180,7 @@
 
 .cardTitle {
   margin: 0;
+  font-family: 'Poppins', sans-serif;
   font-weight: 950;
   letter-spacing: -0.02em;
 }
@@ -201,6 +206,7 @@
   background: rgba(0, 0, 0, 0.28);
   color: rgba(255, 255, 255, 0.92);
   text-decoration: none;
+  font-family: 'Poppins', sans-serif;
   font-weight: 850;
   font-size: 13px;
 }
@@ -217,6 +223,7 @@
 
 .sectionTitle {
   margin: 0 0 10px;
+  font-family: 'Poppins', sans-serif;
   font-weight: 980;
   letter-spacing: -0.02em;
 }
@@ -239,6 +246,7 @@
   justify-content: space-between;
   gap: 12px;
   cursor: pointer;
+  font-family: 'Poppins', sans-serif;
   font-weight: 900;
 }
 
