@@ -38,6 +38,13 @@ export default function RakitPcPage() {
   const [regencyId, setRegencyId] = useState("");
 
   const [kegunaan, setKegunaan] = useState("Gaming");
+
+  // ====== NEW: PROSESOR ======
+  // Brand: Bebas/Intel/AMD (default Bebas biar tetap valid kalau user ga mau milih)
+  const [cpuBrand, setCpuBrand] = useState<"Bebas" | "Intel" | "AMD">("Bebas");
+  // Model opsional (mis: i5-12400F / Ryzen 5 5600 / dll)
+  const [cpuModel, setCpuModel] = useState("");
+
   const [budget, setBudget] = useState(7000000);
   const [catatan, setCatatan] = useState("");
 
@@ -105,6 +112,13 @@ export default function RakitPcPage() {
     return r || p;
   }, [provinceId, regencyId, provinces, regencies]);
 
+  const cpuText = useMemo(() => {
+    const b = safe(cpuBrand);
+    const m = cpuModel.trim();
+    if (!m) return b; // cuma brand (Bebas/Intel/AMD)
+    return `${b} - ${m}`;
+  }, [cpuBrand, cpuModel]);
+
   const pesan = useMemo(() => {
     return (
       "FORM RAKIT PC (IR COMPUTER)\n" +
@@ -113,10 +127,11 @@ export default function RakitPcPage() {
       `WhatsApp: ${safe(waFix)}\n` +
       `Domisili: ${safe(domisiliText)}\n` +
       `Kegunaan: ${safe(kegunaan)}\n` +
+      `Prosesor: ${safe(cpuText)}\n` +
       `Budget: ${formatRupiah(budget)}\n` +
       `Catatan: ${safe(catatan)}\n`
     );
-  }, [nama, waFix, domisiliText, kegunaan, budget, catatan]);
+  }, [nama, waFix, domisiliText, kegunaan, cpuText, budget, catatan]);
 
   const isValid = useMemo(() => {
     return (
@@ -125,18 +140,16 @@ export default function RakitPcPage() {
       provinceId &&
       regencyId &&
       budget >= 1000000
+      // Prosesor sengaja tidak diwajibkan karena default "Bebas"
     );
   }, [nama, waFix, provinceId, regencyId, budget]);
 
   function kirimWA() {
     if (!isValid) {
-      alert(
-        "Lengkapi dulu: Nama, WhatsApp, Provinsi, Kabupaten/Kota, dan Budget."
-      );
+      alert("Lengkapi dulu: Nama, WhatsApp, Provinsi, Kabupaten/Kota, dan Budget.");
       return;
     }
-    const url =
-      `https://wa.me/${ADMIN_WA}` + `?text=${encodeURIComponent(pesan)}`;
+    const url = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesan)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
@@ -160,12 +173,7 @@ export default function RakitPcPage() {
               ← Home
             </Link>
             <div className={styles.brandMini}>
-              <Image
-                src="/ir-logo.png"
-                alt="IR Computer"
-                width={26}
-                height={26}
-              />
+              <Image src="/ir-logo.png" alt="IR Computer" width={26} height={26} />
               <span>IR Computer</span>
             </div>
           </div>
@@ -186,9 +194,7 @@ export default function RakitPcPage() {
             <span className={styles.t2}>Rakit</span>{" "}
             <span className={styles.t3}>PC</span>
           </h1>
-          <p className={styles.sub}>
-            Isi form → otomatis jadi pesan WhatsApp yang rapi.
-          </p>
+          <p className={styles.sub}>Isi form → otomatis jadi pesan WhatsApp yang rapi.</p>
         </header>
 
         <div className={styles.grid}>
@@ -263,20 +269,46 @@ export default function RakitPcPage() {
             <div className={styles.field}>
               <label className={styles.label}>Kegunaan</label>
               <div className={styles.segment}>
-                {["Gaming", "Editing", "Office", "Streaming", "Multitasking"].map(
-                  (x) => (
-                    <button
-                      key={x}
-                      type="button"
-                      className={`${styles.segBtn} ${
-                        kegunaan === x ? styles.segActive : ""
-                      }`}
-                      onClick={() => setKegunaan(x)}
-                    >
-                      {x}
-                    </button>
-                  )
-                )}
+                {["Gaming", "Editing", "Office", "Streaming", "Multitasking"].map((x) => (
+                  <button
+                    key={x}
+                    type="button"
+                    className={`${styles.segBtn} ${kegunaan === x ? styles.segActive : ""}`}
+                    onClick={() => setKegunaan(x)}
+                  >
+                    {x}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ====== NEW: FORM PROSESOR ====== */}
+            <div className={styles.row2}>
+              <div className={styles.field}>
+                <label className={styles.label}>Prosesor (Brand)</label>
+                <select
+                  className={styles.select}
+                  value={cpuBrand}
+                  onChange={(e) => setCpuBrand(e.target.value as "Bebas" | "Intel" | "AMD")}
+                >
+                  <option value="Bebas">Bebas (rekomendasi toko)</option>
+                  <option value="Intel">Intel</option>
+                  <option value="AMD">AMD</option>
+                </select>
+                <div className={styles.help}>
+                  Pilih “Bebas” kalau mau yang paling worth it sesuai budget.
+                </div>
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.label}>Prosesor (Model/Seri)</label>
+                <input
+                  className={styles.input}
+                  value={cpuModel}
+                  onChange={(e) => setCpuModel(e.target.value)}
+                  placeholder="Contoh: i5-12400F / Ryzen 5 5600 / bebas"
+                />
+                <div className={styles.help}>Opsional. Kalau kosong, admin pilihkan.</div>
               </div>
             </div>
 
@@ -350,14 +382,18 @@ export default function RakitPcPage() {
                 <b>{kegunaan}</b>
               </div>
               <div className={styles.qRow}>
+                <span>Prosesor</span>
+                <b>{cpuText || "-"}</b>
+              </div>
+              <div className={styles.qRow}>
                 <span>Budget</span>
                 <b>{formatRupiah(budget)}</b>
               </div>
             </div>
 
             <div className={styles.tip}>
-              Tips: tambahkan catatan seperti “monitor 24 inch”, “SSD minimal 1TB”,
-              “butuh Wi-Fi”, “casing putih”, dll biar rekomendasi makin tepat.
+              Tips: tulis catatan seperti “monitor 24 inch”, “SSD minimal 1TB”, “butuh Wi-Fi”,
+              “casing putih”, dll biar rekomendasi makin tepat.
             </div>
           </div>
         </div>

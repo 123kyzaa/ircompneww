@@ -34,7 +34,6 @@ function formatRupiah(n: number) {
 }
 
 function Icon({ name }: { name: "ig" | "tt" | "shop" | "wa" }) {
-  // Simple inline SVG (biar tanpa install library)
   if (name === "ig")
     return (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -52,6 +51,7 @@ function Icon({ name }: { name: "ig" | "tt" | "shop" | "wa" }) {
         />
       </svg>
     );
+
   if (name === "tt")
     return (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -65,6 +65,7 @@ function Icon({ name }: { name: "ig" | "tt" | "shop" | "wa" }) {
         />
       </svg>
     );
+
   if (name === "shop")
     return (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -78,7 +79,7 @@ function Icon({ name }: { name: "ig" | "tt" | "shop" | "wa" }) {
         />
       </svg>
     );
-  // wa
+
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
@@ -96,6 +97,25 @@ function Icon({ name }: { name: "ig" | "tt" | "shop" | "wa" }) {
   );
 }
 
+function HamburgerIcon({ open }: { open: boolean }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {open ? (
+        <>
+          <path d="M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </>
+      ) : (
+        <>
+          <path d="M5 7h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M5 17h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export default function Page() {
   // ==== SLIDER (gambar taruh di /public/slider/*) ====
   const slides = useMemo(
@@ -104,6 +124,17 @@ export default function Page() {
     ],
     []
   );
+
+  // ==== MOBILE MENU ====
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMenuOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   // ==== FORM STATE ====
   const [nama, setNama] = useState("");
@@ -115,6 +146,9 @@ export default function Page() {
   const [regencyId, setRegencyId] = useState("");
 
   const [kegunaan, setKegunaan] = useState("Gaming");
+
+  // ✅ TAMBAHAN: PROSESOR
+  const [prosesor, setProsesor] = useState("");
 
   // budget diketik normal (digits). preview rupiah di bawahnya.
   const [budgetDigits, setBudgetDigits] = useState("");
@@ -196,12 +230,14 @@ export default function Page() {
       `WA: ${safe(waFix)}\n` +
       `Domisili: ${safe(domisiliText)}\n` +
       `Kegunaan: ${safe(kegunaan)}\n` +
+      `Prosesor: ${safe(prosesor)}\n` + // ✅ masuk pesan
       `Budget: ${safe(budgetPretty)}\n` +
       `Catatan: ${safe(catatan)}`
     );
-  }, [nama, waFix, domisiliText, kegunaan, budgetPretty, catatan]);
+  }, [nama, waFix, domisiliText, kegunaan, prosesor, budgetPretty, catatan]);
 
   function scrollToForm() {
+    setMenuOpen(false);
     document.getElementById("form-rakit")?.scrollIntoView({ behavior: "smooth" });
   }
 
@@ -247,10 +283,9 @@ export default function Page() {
       <div className={home.bgGlow} />
 
       <div className={home.wrap}>
-        {/* TOPBAR - logo dari /public */}
+        {/* TOPBAR */}
         <div className={home.topbar}>
           <div className={home.brand}>
-            {/* LOGO taruh di: /public/ir-logo.png */}
             <Image
               src="/ir-logo.png"
               alt="IR Computer"
@@ -265,6 +300,7 @@ export default function Page() {
             </div>
           </div>
 
+          {/* Desktop actions */}
           <div className={home.actions}>
             <a className={home.iconBtn} href={IG_URL} target="_blank" rel="noreferrer" aria-label="Instagram">
               <Icon name="ig" />
@@ -279,7 +315,46 @@ export default function Page() {
               Rakit PC Sekarang <span aria-hidden="true">→</span>
             </button>
           </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className={home.hamburger}
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Tutup menu" : "Buka menu"}
+            aria-expanded={menuOpen}
+          >
+            <HamburgerIcon open={menuOpen} />
+          </button>
         </div>
+
+        {/* Mobile menu panel */}
+        {menuOpen && (
+          <>
+            <div className={home.menuBackdrop} onClick={() => setMenuOpen(false)} aria-hidden="true" />
+            <div className={home.mobileMenu} role="dialog" aria-label="Menu">
+              <div className={home.mobileMenuTitle}>Menu</div>
+
+              <button className={home.mobilePrimary} onClick={scrollToForm}>
+                Rakit PC Sekarang <span aria-hidden="true">→</span>
+              </button>
+
+              <div className={home.mobileRow}>
+                <a className={home.mobileLink} href={IG_URL} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>
+                  <Icon name="ig" /> Instagram
+                </a>
+                <a className={home.mobileLink} href={TT_URL} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>
+                  <Icon name="tt" /> TikTok
+                </a>
+                <a className={home.mobileLink} href={SHOPEE_URL} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>
+                  <Icon name="shop" /> Shopee
+                </a>
+                <a className={home.mobileLink} href={`https://wa.me/${ADMIN_WA}`} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>
+                  <Icon name="wa" /> WhatsApp
+                </a>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* HERO */}
         <section className={home.hero}>
@@ -352,7 +427,12 @@ export default function Page() {
             </p>
             <div className={home.cardRow}>
               <button className={home.miniBtn} onClick={scrollToForm}>Ke Form</button>
-              <a className={home.miniBtn} href={`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent("Halo IR Computer, saya mau konsultasi rakit PC.")}`} target="_blank" rel="noreferrer">
+              <a
+                className={home.miniBtn}
+                href={`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent("Halo IR Computer, saya mau konsultasi rakit PC.")}`}
+                target="_blank"
+                rel="noreferrer"
+              >
                 Template Chat
               </a>
             </div>
@@ -423,7 +503,7 @@ export default function Page() {
                   onChange={(e) => {
                     const next = e.target.value;
                     setProvinceId(next);
-                    setRegencyId(""); // reset di handler (bukan di effect) => no ESLint warning
+                    setRegencyId("");
                   }}
                 >
                   <option value="">Pilih Provinsi</option>
@@ -467,6 +547,30 @@ export default function Page() {
                   <option value="Office">Office</option>
                   <option value="Lainnya">Lainnya</option>
                 </select>
+              </div>
+
+              {/* ✅ TAMBAHAN: PROSESOR */}
+              <div className={`${form.field} ${form.half}`}>
+                <label className={form.label}>Prosesor (opsional)</label>
+                <select
+                  className={form.select}
+                  value={prosesor}
+                  onChange={(e) => setProsesor(e.target.value)}
+                >
+                  <option value="">Pilih / kosongkan</option>
+                  <option value="Intel Core i3">Intel Core i3</option>
+                  <option value="Intel Core i5">Intel Core i5</option>
+                  <option value="Intel Core i7">Intel Core i7</option>
+                  <option value="Intel Core i9">Intel Core i9</option>
+                  <option value="AMD Ryzen 3">AMD Ryzen 3</option>
+                  <option value="AMD Ryzen 5">AMD Ryzen 5</option>
+                  <option value="AMD Ryzen 7">AMD Ryzen 7</option>
+                  <option value="AMD Ryzen 9">AMD Ryzen 9</option>
+                  <option value="Bebas (rekomendasi toko)">Bebas (rekomendasi toko)</option>
+                </select>
+                <div className={form.help}>
+                  Kalau kamu belum tau, pilih <b>Bebas (rekomendasi toko)</b>.
+                </div>
               </div>
 
               <div className={`${form.field} ${form.half}`}>
