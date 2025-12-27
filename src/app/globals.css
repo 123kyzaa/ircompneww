@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;850;900;950;980&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;850;900;950;980&display=swap");
 
 :root {
   --bg: #07090c;
@@ -20,18 +20,11 @@
   --radius: 22px;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
-  height: 100%;
-}
+html, body { height: 100%; }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
@@ -45,10 +38,22 @@ body {
     linear-gradient(180deg, #05070a, var(--bg));
 }
 
-a {
-  color: inherit;
+a { color: inherit; }
+
+::selection { background: rgba(214, 177, 92, 0.35); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-::selection {
-  background: rgba(214, 177, 92, 0.35);
+@keyframes softFloat {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes kenburns {
+  0%   { transform: scale(1.02); }
+  100% { transform: scale(1.08); }
 }

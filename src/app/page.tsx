@@ -8,10 +8,14 @@ import HomeSlider from "./HomeSlider";
 
 const ADMIN_WA = "6285298747600";
 
-// Link kamu
 const IG_URL = "https://www.instagram.com/ircomputer_mks";
 const TT_URL = "https://www.tiktok.com/@ircomputer_mks";
 const SHOPEE_URL = "https://shopee.co.id/ircomputer";
+
+const STORE_ADDRESS =
+  "Jl. Maccini Raya Ruko PIM No. 11-12, Karuwisi, Kec. Panakkukang, Kota Makassar, Sulawesi Selatan";
+const GMAPS_URL =
+  "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(STORE_ADDRESS);
 
 type Province = { id: string; name: string };
 type Regency = { id: string; province_id: string; name: string };
@@ -33,21 +37,25 @@ function formatRupiah(n: number) {
   }).format(n);
 }
 
-function Icon({ name }: { name: "ig" | "tt" | "shop" | "wa" }) {
+function Icon({ name }: { name: "ig" | "tt" | "shop" | "wa" | "map" }) {
   if (name === "ig")
     return (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path
           d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9A5.5 5.5 0 0 1 16.5 22h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Z"
-          stroke="currentColor" strokeWidth="1.6"
+          stroke="currentColor"
+          strokeWidth="1.6"
         />
         <path
           d="M12 16.2a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4Z"
-          stroke="currentColor" strokeWidth="1.6"
+          stroke="currentColor"
+          strokeWidth="1.6"
         />
         <path
           d="M17.7 6.6h.01"
-          stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinecap="round"
         />
       </svg>
     );
@@ -57,11 +65,15 @@ function Icon({ name }: { name: "ig" | "tt" | "shop" | "wa" }) {
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path
           d="M14 3v10.2a3.8 3.8 0 1 1-3.5-3.8"
-          stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
         />
         <path
           d="M14 3c1.3 2.4 3.4 3.7 6 3.9"
-          stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
         />
       </svg>
     );
@@ -71,11 +83,32 @@ function Icon({ name }: { name: "ig" | "tt" | "shop" | "wa" }) {
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path
           d="M6 7h15l-1.2 12.5a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8L4 3h4"
-          stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinejoin="round"
         />
         <path
           d="M9 10a3 3 0 0 0 6 0"
-          stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+
+  if (name === "map")
+    return (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M12 22s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M12 12.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Z"
+          stroke="currentColor"
+          strokeWidth="1.6"
         />
       </svg>
     );
@@ -117,15 +150,15 @@ function HamburgerIcon({ open }: { open: boolean }) {
 }
 
 export default function Page() {
-  // ==== SLIDER (gambar taruh di /public/slider/*) ====
   const slides = useMemo(
     () => [
-      { src: "/slider/slide1.jpg", alt: "IR Computer - Rakit PC" },
+      { src: "/slider/slide1.png", alt: "IR Computer - Rakit PC" },
+      { src: "/slider/slide2.png", alt: "IR Computer - Gaming Setup" },
+      { src: "/slider/slide3.png", alt: "IR Computer - Service & Upgrade" },
     ],
     []
   );
 
-  // ==== MOBILE MENU ====
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -136,7 +169,6 @@ export default function Page() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // ==== FORM STATE ====
   const [nama, setNama] = useState("");
   const [wa, setWa] = useState("");
 
@@ -145,12 +177,9 @@ export default function Page() {
   const [provinceId, setProvinceId] = useState("");
   const [regencyId, setRegencyId] = useState("");
 
-  const [kegunaan, setKegunaan] = useState("Gaming");
-
-  // ✅ TAMBAHAN: PROSESOR
+  const [kegunaan, setKegunaan] = useState("Gaming + Streaming");
   const [prosesor, setProsesor] = useState("");
 
-  // budget diketik normal (digits). preview rupiah di bawahnya.
   const [budgetDigits, setBudgetDigits] = useState("");
   const budgetNumber = useMemo(() => Number(budgetDigits || "0"), [budgetDigits]);
   const budgetPretty = useMemo(
@@ -159,13 +188,10 @@ export default function Page() {
   );
 
   const [catatan, setCatatan] = useState("");
-
-  // anti-bot basic (honeypot). jangan diisi.
   const [hp, setHp] = useState("");
 
   const waFix = useMemo(() => normalizeWA(wa), [wa]);
 
-  // ==== DATA WILAYAH ====
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -230,7 +256,7 @@ export default function Page() {
       `WA: ${safe(waFix)}\n` +
       `Domisili: ${safe(domisiliText)}\n` +
       `Kegunaan: ${safe(kegunaan)}\n` +
-      `Prosesor: ${safe(prosesor)}\n` + // ✅ masuk pesan
+      `Prosesor: ${safe(prosesor)}\n` +
       `Budget: ${safe(budgetPretty)}\n` +
       `Catatan: ${safe(catatan)}`
     );
@@ -242,7 +268,6 @@ export default function Page() {
   }
 
   function kirimWA() {
-    // honeypot keisi = bot
     if (hp.trim()) return;
 
     if (!nama.trim() || !waFix || !provinceId || !regencyId || !budgetDigits) {
@@ -275,7 +300,6 @@ export default function Page() {
     "Prioritas hemat listrik",
   ];
 
-  // FAQ simple
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
@@ -283,7 +307,6 @@ export default function Page() {
       <div className={home.bgGlow} />
 
       <div className={home.wrap}>
-        {/* TOPBAR */}
         <div className={home.topbar}>
           <div className={home.brand}>
             <Image
@@ -300,7 +323,6 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Desktop actions */}
           <div className={home.actions}>
             <a className={home.iconBtn} href={IG_URL} target="_blank" rel="noreferrer" aria-label="Instagram">
               <Icon name="ig" />
@@ -311,12 +333,14 @@ export default function Page() {
             <a className={home.iconBtn} href={SHOPEE_URL} target="_blank" rel="noreferrer" aria-label="Shopee">
               <Icon name="shop" />
             </a>
+            <a className={home.iconBtn} href={GMAPS_URL} target="_blank" rel="noreferrer" aria-label="Maps">
+              <Icon name="map" />
+            </a>
             <button className={home.primaryBtn} onClick={scrollToForm}>
               Rakit PC Sekarang <span aria-hidden="true">→</span>
             </button>
           </div>
 
-          {/* Mobile hamburger */}
           <button
             className={home.hamburger}
             onClick={() => setMenuOpen((v) => !v)}
@@ -327,7 +351,6 @@ export default function Page() {
           </button>
         </div>
 
-        {/* Mobile menu panel */}
         {menuOpen && (
           <>
             <div className={home.menuBackdrop} onClick={() => setMenuOpen(false)} aria-hidden="true" />
@@ -348,6 +371,9 @@ export default function Page() {
                 <a className={home.mobileLink} href={SHOPEE_URL} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>
                   <Icon name="shop" /> Shopee
                 </a>
+                <a className={home.mobileLink} href={GMAPS_URL} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>
+                  <Icon name="map" /> Datang Langsung
+                </a>
                 <a className={home.mobileLink} href={`https://wa.me/${ADMIN_WA}`} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>
                   <Icon name="wa" /> WhatsApp
                 </a>
@@ -356,14 +382,13 @@ export default function Page() {
           </>
         )}
 
-        {/* HERO */}
         <section className={home.hero}>
           <h1 className={home.title}>
             Build PC Impianmu, <span className={home.titleGrad}>Cepat & Rapi</span>
           </h1>
           <p className={home.sub}>
             Isi form, kirim ke WhatsApp, dan kamu dapat rekomendasi part sesuai kebutuhan + budget.
-            Bisa untuk Gaming, Editing, Streaming, Office.
+            Bisa untuk Gaming + Streaming, Editing, Office, sampai PC Highend.
           </p>
 
           <div className={home.badges}>
@@ -374,12 +399,10 @@ export default function Page() {
           </div>
         </section>
 
-        {/* SLIDER */}
         <div className={home.sliderWrap}>
           <HomeSlider slides={slides} />
         </div>
 
-        {/* FEATURE CARDS */}
         <div className={home.grid}>
           <div className={home.card}>
             <h3 className={home.cardTitle}>Rakit PC (Custom)</h3>
@@ -427,19 +450,13 @@ export default function Page() {
             </p>
             <div className={home.cardRow}>
               <button className={home.miniBtn} onClick={scrollToForm}>Ke Form</button>
-              <a
-                className={home.miniBtn}
-                href={`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent("Halo IR Computer, saya mau konsultasi rakit PC.")}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Template Chat
+              <a className={home.miniBtn} href={GMAPS_URL} target="_blank" rel="noreferrer">
+                Datang Langsung
               </a>
             </div>
           </div>
         </div>
 
-        {/* FORM */}
         <section id="form-rakit" className={form.page}>
           <div className={form.header}>
             <h2 className={form.title}>Form Rakit PC</h2>
@@ -453,7 +470,6 @@ export default function Page() {
               made by students from Telkom Makassar Vocational School
             </div>
 
-            {/* honeypot (disembunyikan) */}
             <input
               value={hp}
               onChange={(e) => setHp(e.target.value)}
@@ -541,15 +557,15 @@ export default function Page() {
                   value={kegunaan}
                   onChange={(e) => setKegunaan(e.target.value)}
                 >
+                  <option value="Gaming + Streaming">Gaming + Streaming</option>
                   <option value="Gaming">Gaming</option>
                   <option value="Editing">Editing</option>
-                  <option value="Streaming">Streaming</option>
                   <option value="Office">Office</option>
+                  <option value="PC Highend">PC Highend</option>
                   <option value="Lainnya">Lainnya</option>
                 </select>
               </div>
 
-              {/* ✅ TAMBAHAN: PROSESOR */}
               <div className={`${form.field} ${form.half}`}>
                 <label className={form.label}>Prosesor (opsional)</label>
                 <select
@@ -636,7 +652,6 @@ export default function Page() {
           </div>
         </section>
 
-        {/* FAQ */}
         <section className={home.section}>
           <h2 className={home.sectionTitle}>FAQ</h2>
           <div className={home.faq}>
@@ -648,6 +663,10 @@ export default function Page() {
               {
                 q: "Bisa request tema warna (putih/black/RGB)?",
                 a: "Bisa. Tulis di catatan: casing + tema warna + preferensi brand kalau ada.",
+              },
+              {
+                q: "Kalau mau datang langsung ke toko?",
+                a: `Alamat: ${STORE_ADDRESS}`,
               },
               {
                 q: "Kalau mau langsung beli part?",
@@ -670,7 +689,6 @@ export default function Page() {
           </div>
         </section>
 
-        {/* FOOTER */}
         <div className={home.footer}>
           <div>© {new Date().getFullYear()} IR Computer Makassar</div>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
@@ -682,6 +700,9 @@ export default function Page() {
             </a>
             <a href={SHOPEE_URL} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
               Shopee
+            </a>
+            <a href={GMAPS_URL} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+              Maps
             </a>
             <a
               href={`https://wa.me/${ADMIN_WA}`}

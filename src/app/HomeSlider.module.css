@@ -16,13 +16,33 @@
 .frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 6;
-  min-height: 240px;
+  height: clamp(220px, 36vw, 440px);
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  transform: scale(1.02);
+  opacity: 0;
+  animation: slideIn 520ms ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.02);
+  }
 }
 
 .img {
   object-fit: cover;
+  object-position: center;
   transform: scale(1.01);
+  filter: saturate(1.02) contrast(1.02);
 }
 
 .overlay {
@@ -31,7 +51,7 @@
   background:
     radial-gradient(900px 400px at 20% 20%, rgba(44, 255, 180, 0.10), transparent 55%),
     radial-gradient(900px 400px at 80% 30%, rgba(226, 59, 59, 0.10), transparent 60%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.30));
+    linear-gradient(180deg, rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.35));
   pointer-events: none;
 }
 
@@ -97,8 +117,7 @@
 
 @media (max-width: 520px) {
   .frame {
-    aspect-ratio: 16 / 8;
-    min-height: 210px;
+    height: 240px;
   }
   .navLeft,
   .navRight {
